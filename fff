@@ -1,16 +1,33 @@
 // ============================================================
-// 장비수요조사 Google Apps Script (Google Sheets 자동 저장)
+// 장비수요조사 Google Apps Script
 // ============================================================
-// 사용법:
+// 
+// ★ 설정 방법 (반드시 순서대로):
+//
 // 1. Google Sheets 새로 만들기
+//    - 시트 탭 이름을 「응답」으로 변경 (헤더는 자동 생성됨)
+//
 // 2. 확장 프로그램 → Apps Script 클릭
-// 3. 이 코드 전체를 복사하여 붙여넣기
-// 4. 저장 (Ctrl+S)
-// 5. 배포 → 새 배포 → 웹 앱 → 액세스: 모든 사용자 → 배포
-// 6. 생성된 URL을 index.html의 GOOGLE_SCRIPT_URL에 붙여넣기
+//    - 기존 코드를 모두 지우고
+//    - 이 파일의 코드 전체를 복사 → 붙여넣기
+//    - Ctrl+S 저장
+//
+// 3. 배포 → 새 배포
+//    - ⚙️ 톱니바퀴 → 「웹 앱」 선택
+//    - 실행 사용자: 본인
+//    - 액세스 권한: 「모든 사용자」 (Anyone)
+//    - 「배포」 클릭
+//
+// 4. 생성된 URL 복사
+//    - index.html의 GOOGLE_SCRIPT_URL 에 붙여넣기
+//
+// ★ 코드 수정 후 재배포 시:
+//    배포 → 배포 관리 → ✏️ 편집 → 버전: 「새 버전」 → 배포
+//    (새 버전으로 해야 변경사항이 반영됩니다)
+//
 // ============================================================
 
-// 응답 데이터를 저장할 열 순서 (헤더)
+// 시트에 저장할 열 순서 (key 이름)
 var HEADERS = [
   'timestamp',
   'consent1', 'consent2',
@@ -34,7 +51,7 @@ var HEADERS = [
   'q13'
 ];
 
-// 헤더 한글 레이블 (시트 첫 행에 자동 생성)
+// 시트 첫 행에 표시할 한글 헤더
 var HEADER_LABELS = [
   '제출일시',
   '개인정보동의1', '개인정보동의2',
@@ -60,52 +77,61 @@ var HEADER_LABELS = [
 
 /**
  * POST 요청 처리 — 설문 응답을 시트에 저장
+ * 
+ * ★ form POST (application/x-www-form-urlencoded) 방식으로 수신
+ *   - 각 필드가 e.parameter 에 key-value로 들어옴
+ *   - JSON POST의 경우도 호환 처리
  */
 function doPost(e) {
   try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('응답');
+    var sheet = getOrCreateSheet();
+    var data = {};
 
-    // '응답' 시트가 없으면 자동 생성
-    if (!sheet) {
-      sheet = ss.insertSheet('응답');
-      // 한글 헤더 자동 삽입
-      sheet.getRange(1, 1, 1, HEADER_LABELS.length).setValues([HEADER_LABELS]);
-      // 헤더 서식: 굵게, 배경색, 고정
-      var headerRange = sheet.getRange(1, 1, 1, HEADER_LABELS.length);
-      headerRange.setFontWeight('bold');
-      headerRange.setBackground('#1565E8');
-      headerRange.setFontColor('#FFFFFF');
-      sheet.setFrozenRows(1);
+    // ── 데이터 파싱 ──
+    // Case 1: form POST (가장 안정적인 방식)
+    if (e.parameter && Object.keys(e.parameter).length > 0) {
+      data = e.parameter;
+    }
+    // Case 2: JSON POST (fetch + application/json)
+    else if (e.postData && e.postData.contents) {
+      try {
+        data = JSON.parse(e.postData.contents);
+      } catch (jsonErr) {
+        // JSON 파싱 실패 시 form-urlencoded로 시도
+        var pairs = e.postData.contents.split('&');
+        for (var i = 0; i < pairs.length; i++) {
+          var kv = pairs[i].split('=');
+          if (kv.length === 2) {
+            data[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1].replace(/\+/g, ' '));
+          }
+        }
+      }
     }
 
-    // JSON 파싱
-    var data = JSON.parse(e.postData.contents);
+    // 데이터가 비어있으면 에러
+    if (!data || Object.keys(data).length === 0) {
+      return makeResponse({ result: 'error', message: 'No data received' });
+    }
 
-    // 헤더 순서에 맞춰 행 데이터 생성
+    // ── 헤더 순서에 맞춰 행 데이터 생성 ──
     var row = HEADERS.map(function(key) {
       return data[key] || '';
     });
 
-    // 시트에 새 행 추가
+    // ── 시트에 행 추가 ──
     sheet.appendRow(row);
 
-    // 성공 응답
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        result: 'success',
-        row: sheet.getLastRow()
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return makeResponse({
+      result: 'success',
+      row: sheet.getLastRow(),
+      message: '응답이 저장되었습니다.'
+    });
 
   } catch (error) {
-    // 에러 응답
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        result: 'error',
-        message: error.toString()
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return makeResponse({
+      result: 'error',
+      message: error.toString()
+    });
   }
 }
 
@@ -114,11 +140,93 @@ function doPost(e) {
  * 브라우저에서 배포 URL을 열면 연결 상태 확인 가능
  */
 function doGet(e) {
+  // GET 파라미터로 데이터가 들어오는 경우도 처리 (JSONP 방식 대체)
+  if (e.parameter && e.parameter.data) {
+    try {
+      var data = JSON.parse(e.parameter.data);
+      var sheet = getOrCreateSheet();
+      var row = HEADERS.map(function(key) {
+        return data[key] || '';
+      });
+      sheet.appendRow(row);
+      
+      var callback = e.parameter.callback || 'callback';
+      return ContentService
+        .createTextOutput(callback + '(' + JSON.stringify({ result: 'success' }) + ')')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    } catch (err) {
+      return makeResponse({ result: 'error', message: err.toString() });
+    }
+  }
+
+  return makeResponse({
+    status: 'ok',
+    message: '장비수요조사 Google Sheets 연동이 정상 작동 중입니다.',
+    timestamp: new Date().toLocaleString('ko-KR'),
+    headers: HEADER_LABELS
+  });
+}
+
+/**
+ * 「응답」 시트 가져오기 (없으면 자동 생성)
+ */
+function getOrCreateSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('응답');
+
+  if (!sheet) {
+    sheet = ss.insertSheet('응답');
+  }
+
+  // 첫 행이 비어있으면 헤더 삽입
+  if (sheet.getLastRow() === 0) {
+    sheet.getRange(1, 1, 1, HEADER_LABELS.length).setValues([HEADER_LABELS]);
+    var headerRange = sheet.getRange(1, 1, 1, HEADER_LABELS.length);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#1565E8');
+    headerRange.setFontColor('#FFFFFF');
+    headerRange.setHorizontalAlignment('center');
+    sheet.setFrozenRows(1);
+    
+    // 열 너비 자동 조정
+    for (var i = 1; i <= HEADER_LABELS.length; i++) {
+      sheet.setColumnWidth(i, 120);
+    }
+  }
+
+  return sheet;
+}
+
+/**
+ * JSON 응답 생성 헬퍼
+ */
+function makeResponse(obj) {
   return ContentService
-    .createTextOutput(JSON.stringify({
-      status: 'ok',
-      message: '장비수요조사 Google Sheets 연동이 정상 작동 중입니다.',
-      timestamp: new Date().toLocaleString('ko-KR')
-    }))
+    .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * 테스트 함수 — Apps Script 편집기에서 직접 실행하여 동작 확인
+ * (실행 → testDoPost 선택 → 실행)
+ */
+function testDoPost() {
+  var testEvent = {
+    parameter: {
+      timestamp: new Date().toLocaleString('ko-KR'),
+      consent1: '동의함',
+      consent2: '동의함',
+      name: '테스트',
+      company: '테스트기업',
+      phone: '010-1234-5678',
+      email: 'test@test.com',
+      org_type: '중소기업/스타트업',
+      industry: '로봇제조',
+      q1: '해당없음'
+    },
+    postData: null
+  };
+
+  var result = doPost(testEvent);
+  Logger.log(result.getContent());
 }
