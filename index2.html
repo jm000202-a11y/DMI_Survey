@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI로봇 영상 데이터 규제특례 실증 및 가상인프라 구축 장비수요조사</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0C1A2E;
+    --ink-80: #2A3A52;
+    --ink-60: #4D5D75;
+    --ink-40: #7A8AA0;
+    --ink-20: #B0BACC;
+    --ink-10: #D8DFE9;
+    --ink-05: #EEF1F6;
+    --ink-02: #F6F8FB;
+    --white: #FFFFFF;
+    --blue: #1565E8;
+    --blue-dark: #0D47A1;
+    --blue-light: #E3EDFD;
+    --blue-glow: rgba(21,101,232,0.12);
+    --teal: #00897B;
+    --teal-light: #E0F2F1;
+    --amber: #F57F17;
+    --red: #D32F2F;
+    --red-light: #FFEBEE;
+    --green: #2E7D32;
+    --green-light: #E8F5E9;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(12,26,46,0.06);
+    --shadow-md: 0 4px 16px rgba(12,26,46,0.08);
+    --shadow-lg: 0 8px 32px rgba(12,26,46,0.1);
+    --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans KR', -apple-system, sans-serif;
+    background: var(--ink-02);
+    color: var(--ink);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-track {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 4px; background: var(--ink-05); z-index: 100;
+  }
+  .progress-fill {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg, var(--blue), var(--teal));
+    transition: width 0.35s ease;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--ink);
+    color: var(--white);
+    padding: 64px 24px 52px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 80%, rgba(21,101,232,0.15), transparent),
+      radial-gradient(ellipse 60% 50% at 85% 20%, rgba(0,137,123,0.12), transparent);
+  }
+
+  /* Subtle grid pattern */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .hero-inner {
+    max-width: 840px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  .hero-tag .dot {
+    width: 6px; height: 6px;
+    background: var(--teal);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero h1 {
+    font-size: clamp(24px, 4.5vw, 34px);
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 18px;
+    letter-spacing: -0.8px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, #64B5F6, #4DD0E1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-size: 14.5px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.85;
+    max-width: 660px;
+  }
+
+  .equip-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .equip-chip {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 18px 16px;
+    transition: var(--transition);
+  }
+
+  .equip-chip:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .equip-chip .idx {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--teal);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .equip-chip .eq-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.92);
+    line-height: 1.5;
+    margin-bottom: 4px;
+  }
+
+  .equip-chip .eq-use {
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* ── Form Layout ── */
+  .form-container {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 20px 16px 72px;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--ink-10);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition);
+  }
+
+  .card:hover { box-shadow: var(--shadow-md); }
+
+  .card-tag {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 4px;
+  }
+
+  .card h2 {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 24px;
+    line-height: 1.4;
+    letter-spacing: -0.3px;
+  }
+
+  /* ── Form Elements ── */
+  .field {
+    margin-bottom: 22px;
+  }
+
+  .field:last-child { margin-bottom: 0; }
+
+  .field-label {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .field-label .req { color: var(--red); margin-left: 2px; }
+
+  .text-input {
+    width: 100%;
+    padding: 11px 16px;
+    border: 1.5px solid var(--ink-10);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--white);
+    outline: none;
+    transition: var(--transition);
+  }
+
+  .text-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-glow);
+  }
+
+  .text-input::placeholder { color: var(--ink-20); }
+
+  textarea.text-input {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.7;
+  }
+
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* ── Pill Options ── */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pills.vertical { flex-direction: column; gap: 6px; }
+
+  .pill {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .pill input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+  .pill .pill-face {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border: 1.5px solid var(--ink-10);
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    color: var(--ink-60);
+    background: var(--white);
+    transition: var(--transition);
+    user-select: none;
+    line-height: 1.5;
+  }
+
+  .pill .pill-face:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: var(--blue-light);
+  }
+
+  .pill input:checked + .pill-face {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 600;
+    box-shadow: 0 2px 8px var(--blue-glow);
+  }
+
+  /* Compact pills for short labels */
+  .pills.compact .pill .pill-face {
+    padding: 6px 14px;
+    font-size: 12.5px;
+  }
+
+  /* ── Consent Box ── */
+  .consent-notice {
+    background: var(--ink-02);
+    border: 1px solid var(--ink-10);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: var(--ink-60);
+  }
+
+  .consent-notice strong { color: var(--ink); }
+
+  .consent-q-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  /* ── Question Block ── */
+  .q-block { margin-bottom: 32px; }
+  .q-block:last-child { margin-bottom: 0; }
+
+  .q-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .q-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    background: var(--blue);
+    color: var(--white);
+    border-radius: 50%;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .q-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.6;
+    padding-top: 3px;
+  }
+
+  .q-text .hint {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--ink-40);
+    margin-left: 4px;
+  }
+
+  /* ── Sub-items (SILS/HILS/RILS rows) ── */
+  .sub-items {
+    border: 1px solid var(--ink-10);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .sub-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--ink-05);
+    flex-wrap: wrap;
+  }
+
+  .sub-item:last-child { border-bottom: none; }
+  .sub-item:nth-child(even) { background: var(--ink-02); }
+
+  .sub-label {
+    min-width: 200px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.55;
+    padding-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .sub-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1;
+  }
+
+  /* ── Likert Scale Table ── */
+  .likert-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--ink-10);
+    border-radius: var(--radius-sm);
+  }
+
+  .likert {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 580px;
+  }
+
+  .likert th {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-40);
+    padding: 10px 6px;
+    text-align: center;
+    border-bottom: 2px solid var(--ink-10);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .likert th:first-child {
+    text-align: left;
+    padding-left: 16px;
+    width: 44%;
+  }
+
+  .likert td {
+    padding: 14px 6px;
+    text-align: center;
+    border-bottom: 1px solid var(--ink-05);
+  }
+
+  .likert tr:last-child td { border-bottom: none; }
+  .likert tr:nth-child(even) { background: var(--ink-02); }
+
+  .likert td:first-child {
+    text-align: left;
+    padding-left: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-80);
+    line-height: 1.5;
+  }
+
+  .likert input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--blue);
+    cursor: pointer;
+  }
+
+  /* ── Usage Input ── */
+  .usage-grid {
+    border: 1px solid var(--ink-10);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .usage-header {
+    display: grid;
+    grid-template-columns: 1fr 130px 130px;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--ink-02);
+    border-bottom: 2px solid var(--ink-10);
+  }
+
+  .usage-header span {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-40);
+    text-align: center;
+    letter-spacing: 0.3px;
+  }
+
+  .usage-header span:first-child { text-align: left; }
+
+  .usage-row {
+    display: grid;
+    grid-template-columns: 1fr 130px 130px;
+    gap: 12px;
+    padding: 12px 16px;
+    align-items: center;
+    border-bottom: 1px solid var(--ink-05);
+  }
+
+  .usage-row:last-child { border-bottom: none; }
+  .usage-row:nth-child(even) { background: var(--ink-02); }
+
+  .usage-row .text-input {
+    text-align: center;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .usage-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-80);
+    line-height: 1.5;
+  }
+
+  /* ── Difficulty section ── */
+  .diff-block {
+    border: 1px solid var(--ink-10);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .diff-item {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--ink-05);
+  }
+
+  .diff-item:last-child { border-bottom: none; }
+  .diff-item:nth-child(even) { background: var(--ink-02); }
+
+  .diff-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  /* ── Reference legend for Q12 ── */
+  .legend-box {
+    background: var(--ink-02);
+    border: 1px solid var(--ink-10);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 12.5px;
+    line-height: 2;
+    color: var(--ink-60);
+  }
+
+  /* ── Other input ── */
+  .other-inline {
+    margin-top: 8px;
+    display: none;
+  }
+
+  .other-inline.show { display: block; }
+
+  .other-inline .text-input {
+    max-width: 320px;
+  }
+
+  /* ── Submit ── */
+  .submit-area {
+    text-align: center;
+    margin-top: 36px;
+  }
+
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    padding: 15px 52px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 20px rgba(21,101,232,0.25);
+    letter-spacing: -0.2px;
+  }
+
+  .btn-submit:hover {
+    background: var(--blue-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(21,101,232,0.35);
+  }
+
+  .btn-submit:active { transform: translateY(0); }
+
+  .btn-submit svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 36px 16px;
+    font-size: 12.5px;
+    color: var(--ink-40);
+    line-height: 2;
+  }
+
+  .footer strong { color: var(--ink-80); font-weight: 700; }
+
+  /* ── Success Overlay ── */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(12,26,46,0.55);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .overlay.active { display: flex; }
+
+  .overlay-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 52px 44px;
+    text-align: center;
+    max-width: 440px;
+    margin: 20px;
+    animation: scaleUp 0.45s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: var(--shadow-lg);
+  }
+
+  @keyframes scaleUp {
+    from { transform: scale(0.82); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .overlay-icon {
+    width: 68px; height: 68px;
+    background: var(--green-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 22px;
+  }
+
+  .overlay-icon svg { width: 34px; height: 34px; color: var(--green); }
+
+  .overlay-card h3 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+  }
+
+  .overlay-card p {
+    font-size: 14px;
+    color: var(--ink-60);
+    line-height: 1.7;
+  }
+
+  /* ── Loading State ── */
+  .btn-submit.loading {
+    pointer-events: none;
+    opacity: 0.75;
+  }
+
+  .btn-submit.loading .btn-text { display: none; }
+  .btn-submit .btn-loading { display: none; }
+  .btn-submit.loading .btn-loading { display: inline; }
+
+  .spinner {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Error ── */
+  .field-error {
+    border-color: var(--red) !important;
+    box-shadow: 0 0 0 3px rgba(211,47,47,0.1) !important;
+  }
+
+  .error-msg {
+    font-size: 12px;
+    color: var(--red);
+    margin-top: 4px;
+    display: none;
+  }
+
+  .error-msg.show { display: block; }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .row-2 { grid-template-columns: 1fr; }
+    .card { padding: 28px 20px; }
+    .hero { padding: 48px 20px 40px; }
+    .sub-label { min-width: 100%; }
+    .usage-header { display: none; }
+    .usage-row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .usage-row .text-input::placeholder { font-size: 11px; }
+    .likert { min-width: 520px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress -->
+<div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag"><span class="dot"></span> 글로벌 로봇 AI 특구 · 2026–27 구축</div>
+    <h1>AI로봇 영상 데이터 규제특례 실증 및<br><em>가상인프라 구축</em> 장비수요조사</h1>
+    <p class="hero-desc">글로벌 로봇 AI 특구에서는 로봇 산업의 AI 인식 성능 극대화와 규제특례 기반의 데이터 비즈니스 활성화를 위해 고성능 인프라 구축 사업을 진행하고 있습니다. 본 설문조사는 2026~27년 구축 예정인 가상 시뮬레이션 인프라 구축 장비에 대한 수요조사입니다.</p>
+    <div class="equip-strip">
+      <div class="equip-chip">
+        <div class="idx">Equipment 01</div>
+        <div class="eq-name">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div>
+        <div class="eq-use">고성능 GPU 서버</div>
+      </div>
+      <div class="equip-chip">
+        <div class="idx">Equipment 02</div>
+        <div class="eq-name">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div>
+        <div class="eq-use">로봇 SILS (Soft-in-the-loop)</div>
+      </div>
+      <div class="equip-chip">
+        <div class="idx">Equipment 03</div>
+        <div class="eq-name">AI로봇 가상-물리 연동 및 실증 시스템</div>
+        <div class="eq-use">HILS · RILS</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="form-container" id="surveyForm">
+
+  <!-- ── 개인정보 동의 ── -->
+  <div class="card">
+    <div class="card-tag">Consent</div>
+    <h2>개인정보 수집 및 이용 동의</h2>
+    <div class="consent-notice">
+      <strong>대구기계부품연구원</strong>은 개인정보를 중요시하며, 『정보통신망 이용촉진 및 정보보호 등에 관한 법률』 및 『개인정보보호법』을 준수하고 있습니다.<br><br>
+      <strong>수집 항목:</strong> 성명, 연락처, 기관정보, 업종 등<br>
+      <strong>수집·이용 목적:</strong> 국가연구시설장비 도입을 위한 사전 장비 수요조사<br><br>
+      법률에서 정하는 경우를 제외하고는 귀하의 동의 없이 개인정보를 제3자에게 제공하지 않습니다.
+    </div>
+
+    <div class="field">
+      <div class="consent-q-label">개인(기업)정보 수집항목 제공에 동의하십니까? <span style="color:var(--red)">*</span></div>
+      <div class="pills">
+        <label class="pill"><input type="radio" name="consent1" value="동의함" required><span class="pill-face">동의함</span></label>
+        <label class="pill"><input type="radio" name="consent1" value="동의안함"><span class="pill-face">동의안함</span></label>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="consent-q-label">고유식별 정보 제공에 동의하십니까? <span style="color:var(--red)">*</span></div>
+      <div class="pills">
+        <label class="pill"><input type="radio" name="consent2" value="동의함" required><span class="pill-face">동의함</span></label>
+        <label class="pill"><input type="radio" name="consent2" value="동의안함"><span class="pill-face">동의안함</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 응답자 정보 ── -->
+  <div class="card">
+    <div class="card-tag">Respondent</div>
+    <h2>응답자 정보</h2>
+    <div class="row-2">
+      <div class="field">
+        <label class="field-label">이름 <span class="req">*</span></label>
+        <input type="text" class="text-input" name="name" required placeholder="성명">
+      </div>
+      <div class="field">
+        <label class="field-label">기업명 <span class="req">*</span></label>
+        <input type="text" class="text-input" name="company" required placeholder="기업/기관명">
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label class="field-label">전화번호 <span class="req">*</span></label>
+        <input type="tel" class="text-input" name="phone" required placeholder="010-0000-0000">
+      </div>
+      <div class="field">
+        <label class="field-label">이메일 <span class="req">*</span></label>
+        <input type="email" class="text-input" name="email" required placeholder="example@company.com">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">기관 구분 <span class="req">*</span></label>
+      <div class="pills" id="orgTypePills">
+        <label class="pill"><input type="radio" name="org_type" value="중견기업" required><span class="pill-face">중견기업</span></label>
+        <label class="pill"><input type="radio" name="org_type" value="중소기업/스타트업"><span class="pill-face">중소기업/스타트업</span></label>
+        <label class="pill"><input type="radio" name="org_type" value="연구소/대학"><span class="pill-face">연구소/대학 (연구기관)</span></label>
+        <label class="pill"><input type="radio" name="org_type" value="기타"><span class="pill-face">기타</span></label>
+      </div>
+      <div class="other-inline" id="orgOther"><input type="text" class="text-input" name="org_type_other" placeholder="기관 구분 기타 입력"></div>
+    </div>
+    <div class="field">
+      <label class="field-label">업종 <span class="req">*</span></label>
+      <div class="pills" id="industryPills">
+        <label class="pill"><input type="radio" name="industry" value="로봇제조" required><span class="pill-face">로봇제조</span></label>
+        <label class="pill"><input type="radio" name="industry" value="자율주행/모빌리티"><span class="pill-face">자율주행/모빌리티</span></label>
+        <label class="pill"><input type="radio" name="industry" value="AI 알고리즘 개발"><span class="pill-face">AI 알고리즘 개발</span></label>
+        <label class="pill"><input type="radio" name="industry" value="시뮬레이션 SW"><span class="pill-face">시뮬레이션 SW</span></label>
+        <label class="pill"><input type="radio" name="industry" value="기타"><span class="pill-face">기타</span></label>
+      </div>
+      <div class="other-inline" id="indOther"><input type="text" class="text-input" name="industry_other" placeholder="업종 기타 입력"></div>
+    </div>
+  </div>
+
+  <!-- ── Q1 ~ Q3 ── -->
+  <div class="card">
+    <div class="card-tag">Survey</div>
+    <h2>설문 내용</h2>
+
+    <!-- Q1 -->
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">1</span><p class="q-text">귀사는 대구 AI로봇 글로벌혁신규제자유특구 사업자입니까?</p></div>
+      <div class="pills">
+        <label class="pill"><input type="radio" name="q1" value="특구사업자에 해당"><span class="pill-face">특구사업자에 해당</span></label>
+        <label class="pill"><input type="radio" name="q1" value="해당없음"><span class="pill-face">해당없음</span></label>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">2</span><p class="q-text">귀사의 개발 프로세스에서 다음의 시뮬레이션 단계를 어느 정도 활용하고 계십니까?</p></div>
+      <div class="sub-items">
+        <div class="sub-item">
+          <div class="sub-label">SILS (가상환경 내 SW 검증)</div>
+          <div class="sub-pills pills compact">
+            <label class="pill"><input type="radio" name="q2_sils" value="미도입"><span class="pill-face">미도입</span></label>
+            <label class="pill"><input type="radio" name="q2_sils" value="도입 검토 중"><span class="pill-face">도입 검토 중</span></label>
+            <label class="pill"><input type="radio" name="q2_sils" value="부분 활용"><span class="pill-face">부분 활용</span></label>
+            <label class="pill"><input type="radio" name="q2_sils" value="적극 활용"><span class="pill-face">적극 활용</span></label>
+          </div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">HILS (제어기-가상환경 연동 검증)</div>
+          <div class="sub-pills pills compact">
+            <label class="pill"><input type="radio" name="q2_hils" value="미도입"><span class="pill-face">미도입</span></label>
+            <label class="pill"><input type="radio" name="q2_hils" value="도입 검토 중"><span class="pill-face">도입 검토 중</span></label>
+            <label class="pill"><input type="radio" name="q2_hils" value="부분 활용"><span class="pill-face">부분 활용</span></label>
+            <label class="pill"><input type="radio" name="q2_hils" value="적극 활용"><span class="pill-face">적극 활용</span></label>
+          </div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">RILS (로봇-가상환경 연동 검증)</div>
+          <div class="sub-pills pills compact">
+            <label class="pill"><input type="radio" name="q2_rils" value="미도입"><span class="pill-face">미도입</span></label>
+            <label class="pill"><input type="radio" name="q2_rils" value="도입 검토 중"><span class="pill-face">도입 검토 중</span></label>
+            <label class="pill"><input type="radio" name="q2_rils" value="부분 활용"><span class="pill-face">부분 활용</span></label>
+            <label class="pill"><input type="radio" name="q2_rils" value="적극 활용"><span class="pill-face">적극 활용</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">3</span><p class="q-text">가상 시뮬레이션 시 가장 큰 기술적 장벽은 무엇입니까? <span class="hint">(복수응답 가능)</span></p></div>
+      <div class="pills vertical">
+        <label class="pill"><input type="checkbox" name="q3" value="A"><span class="pill-face">A. 복잡한 시나리오별 환경 구축 및 물리 엔진 최적화의 어려움</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="B"><span class="pill-face">B. 디지털 트윈 에셋(Asset) 및 센서 모델 부재</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="C"><span class="pill-face">C. 대규모 병렬 연산을 위한 고성능 컴퓨팅 자원 부족</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="D"><span class="pill-face">D. 가상 실증 데이터의 공신력 및 성능 인증 체계 부재</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="E"><span class="pill-face">E. 시뮬레이터 및 HILS/RILS 장비 운용 전문 인력 부족</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="F"><span class="pill-face">F. 기타</span></label>
+      </div>
+      <div class="other-inline" id="q3Other"><input type="text" class="text-input" name="q3_other" placeholder="기타 기술적 장벽 입력"></div>
+    </div>
+  </div>
+
+  <!-- ── Q4 ~ Q6 ── -->
+  <div class="card">
+    <!-- Q4 -->
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">4</span><p class="q-text">다음의 장비를 알고 계십니까?</p></div>
+      <div class="sub-items">
+        <div class="sub-item"><div class="sub-label">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q4_1" value="알고있음"><span class="pill-face">알고있음</span></label><label class="pill"><input type="radio" name="q4_1" value="모름"><span class="pill-face">모름</span></label></div></div>
+        <div class="sub-item"><div class="sub-label">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q4_2" value="알고있음"><span class="pill-face">알고있음</span></label><label class="pill"><input type="radio" name="q4_2" value="모름"><span class="pill-face">모름</span></label></div></div>
+        <div class="sub-item"><div class="sub-label">AI로봇 가상-물리 연동 및 실증 시스템</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q4_3" value="알고있음"><span class="pill-face">알고있음</span></label><label class="pill"><input type="radio" name="q4_3" value="모름"><span class="pill-face">모름</span></label></div></div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">5</span><p class="q-text">귀 기관은 본 장비와 관련한 장비를 이용한 경험이 있습니까?</p></div>
+      <div class="sub-items">
+        <div class="sub-item"><div class="sub-label">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q5_1" value="있음"><span class="pill-face">있음</span></label><label class="pill"><input type="radio" name="q5_1" value="없음"><span class="pill-face">없음</span></label></div></div>
+        <div class="sub-item"><div class="sub-label">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q5_2" value="있음"><span class="pill-face">있음</span></label><label class="pill"><input type="radio" name="q5_2" value="없음"><span class="pill-face">없음</span></label></div></div>
+        <div class="sub-item"><div class="sub-label">AI로봇 가상-물리 연동 및 실증 시스템</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q5_3" value="있음"><span class="pill-face">있음</span></label><label class="pill"><input type="radio" name="q5_3" value="없음"><span class="pill-face">없음</span></label></div></div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">6</span><p class="q-text">장비를 이용한 경험이 있다면, 애로사항은 어떤 것이 있습니까? <span class="hint">(복수응답 가능)</span></p></div>
+      <div class="diff-block">
+        <div class="diff-item"><div class="diff-name">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div><div class="pills compact"><label class="pill"><input type="checkbox" name="q6_1" value="접근성"><span class="pill-face">접근성</span></label><label class="pill"><input type="checkbox" name="q6_1" value="작업성"><span class="pill-face">작업성(대기/소요시간)</span></label><label class="pill"><input type="checkbox" name="q6_1" value="장비사양부족"><span class="pill-face">장비 사양 부족</span></label><label class="pill"><input type="checkbox" name="q6_1" value="사용법숙지부재"><span class="pill-face">사용법 숙지 부재</span></label><label class="pill"><input type="checkbox" name="q6_1" value="기타"><span class="pill-face">기타</span></label></div></div>
+        <div class="diff-item"><div class="diff-name">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div><div class="pills compact"><label class="pill"><input type="checkbox" name="q6_2" value="접근성"><span class="pill-face">접근성</span></label><label class="pill"><input type="checkbox" name="q6_2" value="작업성"><span class="pill-face">작업성(대기/소요시간)</span></label><label class="pill"><input type="checkbox" name="q6_2" value="장비사양부족"><span class="pill-face">장비 사양 부족</span></label><label class="pill"><input type="checkbox" name="q6_2" value="사용법숙지부재"><span class="pill-face">사용법 숙지 부재</span></label><label class="pill"><input type="checkbox" name="q6_2" value="기타"><span class="pill-face">기타</span></label></div></div>
+        <div class="diff-item"><div class="diff-name">AI로봇 가상-물리 연동 및 실증 시스템</div><div class="pills compact"><label class="pill"><input type="checkbox" name="q6_3" value="접근성"><span class="pill-face">접근성</span></label><label class="pill"><input type="checkbox" name="q6_3" value="작업성"><span class="pill-face">작업성(대기/소요시간)</span></label><label class="pill"><input type="checkbox" name="q6_3" value="장비사양부족"><span class="pill-face">장비 사양 부족</span></label><label class="pill"><input type="checkbox" name="q6_3" value="사용법숙지부재"><span class="pill-face">사용법 숙지 부재</span></label><label class="pill"><input type="checkbox" name="q6_3" value="기타"><span class="pill-face">기타</span></label></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Q7 ~ Q8 ── -->
+  <div class="card">
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">7</span><p class="q-text">본 장비를 구축할 필요가 있다고 생각하십니까?</p></div>
+      <div class="likert-wrap"><table class="likert"><thead><tr><th>장비명</th><th>매우 높음</th><th>높음</th><th>보통</th><th>다소 낮음</th><th>낮음</th></tr></thead><tbody>
+        <tr><td>AI로봇 가상 시뮬레이션 고성능 실증 시스템</td><td><input type="radio" name="q7_1" value="매우높음"></td><td><input type="radio" name="q7_1" value="높음"></td><td><input type="radio" name="q7_1" value="보통"></td><td><input type="radio" name="q7_1" value="다소낮음"></td><td><input type="radio" name="q7_1" value="낮음"></td></tr>
+        <tr><td>AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</td><td><input type="radio" name="q7_2" value="매우높음"></td><td><input type="radio" name="q7_2" value="높음"></td><td><input type="radio" name="q7_2" value="보통"></td><td><input type="radio" name="q7_2" value="다소낮음"></td><td><input type="radio" name="q7_2" value="낮음"></td></tr>
+        <tr><td>AI로봇 가상-물리 연동 및 실증 시스템</td><td><input type="radio" name="q7_3" value="매우높음"></td><td><input type="radio" name="q7_3" value="높음"></td><td><input type="radio" name="q7_3" value="보통"></td><td><input type="radio" name="q7_3" value="다소낮음"></td><td><input type="radio" name="q7_3" value="낮음"></td></tr>
+      </tbody></table></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">8</span><p class="q-text">본 장비를 구축한다면 귀 기관은 활용할 의사가 있습니까?</p></div>
+      <div class="likert-wrap"><table class="likert"><thead><tr><th>장비명</th><th>매우 높음</th><th>높음</th><th>보통</th><th>다소 낮음</th><th>낮음</th></tr></thead><tbody>
+        <tr><td>AI로봇 가상 시뮬레이션 고성능 실증 시스템</td><td><input type="radio" name="q8_1" value="매우높음"></td><td><input type="radio" name="q8_1" value="높음"></td><td><input type="radio" name="q8_1" value="보통"></td><td><input type="radio" name="q8_1" value="다소낮음"></td><td><input type="radio" name="q8_1" value="낮음"></td></tr>
+        <tr><td>AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</td><td><input type="radio" name="q8_2" value="매우높음"></td><td><input type="radio" name="q8_2" value="높음"></td><td><input type="radio" name="q8_2" value="보통"></td><td><input type="radio" name="q8_2" value="다소낮음"></td><td><input type="radio" name="q8_2" value="낮음"></td></tr>
+        <tr><td>AI로봇 가상-물리 연동 및 실증 시스템</td><td><input type="radio" name="q8_3" value="매우높음"></td><td><input type="radio" name="q8_3" value="높음"></td><td><input type="radio" name="q8_3" value="보통"></td><td><input type="radio" name="q8_3" value="다소낮음"></td><td><input type="radio" name="q8_3" value="낮음"></td></tr>
+      </tbody></table></div>
+    </div>
+  </div>
+
+  <!-- ── Q9 ~ Q10 ── -->
+  <div class="card">
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">9</span><p class="q-text">본 장비를 활용한다면 어떤 용도로 활용할 생각이십니까?</p></div>
+      <textarea class="text-input" name="q9" placeholder="활용 용도를 자유롭게 작성해주세요"></textarea>
+    </div>
+
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">10</span><p class="q-text">활용 의사가 있다면 귀사는 연간 몇 회 정도 활용할 예정입니까?</p></div>
+      <div class="usage-grid">
+        <div class="usage-header"><span>장비명</span><span>활용횟수 (회/연간)</span><span>예상시간 (시간/1회)</span></div>
+        <div class="usage-row"><div class="usage-name">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div><input type="text" class="text-input" name="q10_1_count" placeholder="횟수"><input type="text" class="text-input" name="q10_1_hours" placeholder="시간"></div>
+        <div class="usage-row"><div class="usage-name">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div><input type="text" class="text-input" name="q10_2_count" placeholder="횟수"><input type="text" class="text-input" name="q10_2_hours" placeholder="시간"></div>
+        <div class="usage-row"><div class="usage-name">AI로봇 가상-물리 연동 및 실증 시스템</div><input type="text" class="text-input" name="q10_3_count" placeholder="횟수"><input type="text" class="text-input" name="q10_3_hours" placeholder="시간"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Q11 ── -->
+  <div class="card">
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">11</span><p class="q-text">본 장비를 구축한다면 공동 활용 가능성이 있다고 생각하십니까?</p></div>
+      <div class="likert-wrap"><table class="likert"><thead><tr><th>장비명</th><th>매우 높음</th><th>높음</th><th>보통</th><th>다소 낮음</th><th>낮음</th></tr></thead><tbody>
+        <tr><td>AI로봇 가상 시뮬레이션 고성능 실증 시스템</td><td><input type="radio" name="q11_1" value="매우높음"></td><td><input type="radio" name="q11_1" value="높음"></td><td><input type="radio" name="q11_1" value="보통"></td><td><input type="radio" name="q11_1" value="다소낮음"></td><td><input type="radio" name="q11_1" value="낮음"></td></tr>
+        <tr><td>AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</td><td><input type="radio" name="q11_2" value="매우높음"></td><td><input type="radio" name="q11_2" value="높음"></td><td><input type="radio" name="q11_2" value="보통"></td><td><input type="radio" name="q11_2" value="다소낮음"></td><td><input type="radio" name="q11_2" value="낮음"></td></tr>
+        <tr><td>AI로봇 가상-물리 연동 및 실증 시스템</td><td><input type="radio" name="q11_3" value="매우높음"></td><td><input type="radio" name="q11_3" value="높음"></td><td><input type="radio" name="q11_3" value="보통"></td><td><input type="radio" name="q11_3" value="다소낮음"></td><td><input type="radio" name="q11_3" value="낮음"></td></tr>
+      </tbody></table></div>
+    </div>
+  </div>
+
+  <!-- ── Q12 ── -->
+  <div class="card">
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">12</span><p class="q-text">장비 구축 및 인프라 운영과 관련하여, 향후 가장 도움이 될 중점 추진 분야는 무엇입니까? <span class="hint">(복수응답 가능)</span></p></div>
+      <div class="legend-box">
+        A. 기업 맞춤형 가상 환경 구축 지원 &nbsp;·&nbsp; B. 가상 실증 기반 성능 인증 지원 &nbsp;·&nbsp; C. Sim-to-Real 간극 최적화 컨설팅<br>
+        D. 가상 센서(합성) 데이터 생성 지원 &nbsp;·&nbsp; E. 장비 및 시나리오 운영 기술 교육 &nbsp;·&nbsp; F. 인프라 활용 공동 R&D 과제 발굴 &nbsp;·&nbsp; G. 기타
+      </div>
+      <div class="diff-block">
+        <div class="diff-item"><div class="diff-name">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div><div class="pills compact"><label class="pill"><input type="checkbox" name="q12_1" value="A"><span class="pill-face">A</span></label><label class="pill"><input type="checkbox" name="q12_1" value="B"><span class="pill-face">B</span></label><label class="pill"><input type="checkbox" name="q12_1" value="C"><span class="pill-face">C</span></label><label class="pill"><input type="checkbox" name="q12_1" value="D"><span class="pill-face">D</span></label><label class="pill"><input type="checkbox" name="q12_1" value="E"><span class="pill-face">E</span></label><label class="pill"><input type="checkbox" name="q12_1" value="F"><span class="pill-face">F</span></label><label class="pill"><input type="checkbox" name="q12_1" value="G"><span class="pill-face">G</span></label></div></div>
+        <div class="diff-item"><div class="diff-name">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div><div class="pills compact"><label class="pill"><input type="checkbox" name="q12_2" value="A"><span class="pill-face">A</span></label><label class="pill"><input type="checkbox" name="q12_2" value="B"><span class="pill-face">B</span></label><label class="pill"><input type="checkbox" name="q12_2" value="C"><span class="pill-face">C</span></label><label class="pill"><input type="checkbox" name="q12_2" value="D"><span class="pill-face">D</span></label><label class="pill"><input type="checkbox" name="q12_2" value="E"><span class="pill-face">E</span></label><label class="pill"><input type="checkbox" name="q12_2" value="F"><span class="pill-face">F</span></label><label class="pill"><input type="checkbox" name="q12_2" value="G"><span class="pill-face">G</span></label></div></div>
+        <div class="diff-item"><div class="diff-name">AI로봇 가상-물리 연동 및 실증 시스템</div><div class="pills compact"><label class="pill"><input type="checkbox" name="q12_3" value="A"><span class="pill-face">A</span></label><label class="pill"><input type="checkbox" name="q12_3" value="B"><span class="pill-face">B</span></label><label class="pill"><input type="checkbox" name="q12_3" value="C"><span class="pill-face">C</span></label><label class="pill"><input type="checkbox" name="q12_3" value="D"><span class="pill-face">D</span></label><label class="pill"><input type="checkbox" name="q12_3" value="E"><span class="pill-face">E</span></label><label class="pill"><input type="checkbox" name="q12_3" value="F"><span class="pill-face">F</span></label><label class="pill"><input type="checkbox" name="q12_3" value="G"><span class="pill-face">G</span></label></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Q13 ── -->
+  <div class="card">
+    <div class="q-block">
+      <div class="q-head"><span class="q-num">13</span><p class="q-text">기타 설문조사와 관련한 의견이 있으신 경우 자유롭게 작성바랍니다.</p></div>
+      <textarea class="text-input" name="q13" rows="4" placeholder="기타 의견을 자유롭게 작성해주세요"></textarea>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-area">
+    <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      <span class="btn-text">설문 제출하기</span>
+      <span class="btn-loading"><span class="spinner"></span> 제출 중...</span>
+    </button>
+    <div class="error-msg" id="submitError" style="margin-top:12px;text-align:center;"></div>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <strong>문의처</strong><br>
+  대구기계부품연구원 기계로봇연구본부 조현우 선임<br>
+  전화 053-608-2044 &nbsp;·&nbsp; 이메일 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4a223d2922250a2e272364382f642138">[email&#160;protected]</a>
+</footer>
+
+<!-- Success Overlay -->
+<div class="overlay" id="overlay">
+  <div class="overlay-card">
+    <div class="overlay-icon"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h3>설문이 제출되었습니다</h3>
+    <p>장비수요조사에 참여해주셔서 감사합니다.<br>소중한 의견은 인프라 구축에 반영하겠습니다.</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// ★★★ 아래 URL을 반드시 입력하세요 ★★★
+// Google Apps Script 웹앱 배포 URL을 붙여넣으면
+// 설문 응답이 Google Sheets에 자동 저장됩니다.
+// ══════════════════════════════════════════════
+const GOOGLE_SCRIPT_URL = '';
+// 예시: 'https://script.google.com/macros/s/AKfycbx.../exec'
+// ══════════════════════════════════════════════
+
+// ── Toggle "기타" fields ──
+document.querySelectorAll('#orgTypePills input').forEach(r => {
+  r.addEventListener('change', () => {
+    document.getElementById('orgOther').classList.toggle('show', r.value === '기타' && r.checked);
+  });
+});
+document.querySelectorAll('#industryPills input').forEach(r => {
+  r.addEventListener('change', () => {
+    document.getElementById('indOther').classList.toggle('show', r.value === '기타' && r.checked);
+  });
+});
+document.querySelectorAll('input[name="q3"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const fChecked = document.querySelector('input[name="q3"][value="F"]');
+    document.getElementById('q3Other').classList.toggle('show', fChecked && fChecked.checked);
+  });
+});
+
+// ── Progress bar ──
+window.addEventListener('scroll', () => {
+  const pct = Math.min(window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100, 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+});
+
+// ── Collect all form data ──
+function collectData() {
+  const d = {};
+  d.timestamp = new Date().toLocaleString('ko-KR', {
+    year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', second:'2-digit'
+  });
+
+  document.querySelectorAll('.text-input').forEach(el => {
+    if (el.name) d[el.name] = el.value.trim();
+  });
+
+  document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+    d[el.name] = el.value;
+  });
+
+  const groups = {};
+  document.querySelectorAll('input[type="checkbox"]:checked').forEach(el => {
+    if (!groups[el.name]) groups[el.name] = [];
+    groups[el.name].push(el.value);
+  });
+  for (const [k, v] of Object.entries(groups)) d[k] = v.join(', ');
+
+  return d;
+}
+
+// ── Validate required fields ──
+function validate() {
+  const c1 = document.querySelector('input[name="consent1"]:checked');
+  if (!c1 || c1.value !== '동의함') {
+    alert('개인정보 수집 동의가 필요합니다.');
+    return false;
+  }
+
+  const required = ['name', 'company', 'phone', 'email'];
+  for (const n of required) {
+    const el = document.querySelector(`input[name="${n}"]`);
+    if (!el.value.trim()) {
+      el.focus();
+      el.classList.add('field-error');
+      alert('필수 항목을 입력해주세요.');
+      return false;
+    }
+    el.classList.remove('field-error');
+  }
+
+  if (!document.querySelector('input[name="org_type"]:checked')) {
+    alert('기관 구분을 선택해주세요.');
+    return false;
+  }
+  if (!document.querySelector('input[name="industry"]:checked')) {
+    alert('업종을 선택해주세요.');
+    return false;
+  }
+
+  return true;
+}
+
+// ── Submit to Google Sheets ──
+async function handleSubmit() {
+  if (!validate()) return;
+
+  const btn = document.getElementById('submitBtn');
+  const errEl = document.getElementById('submitError');
+  errEl.classList.remove('show');
+  errEl.textContent = '';
+
+  // Google Script URL 미설정 경고
+  if (!GOOGLE_SCRIPT_URL) {
+    errEl.textContent = '⚠️ Google Sheets 연동 URL이 설정되지 않았습니다. 관리자에게 문의하세요.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  btn.classList.add('loading');
+  const data = collectData();
+
+  try {
+    // 방법 1: fetch (no-cors) — 대부분의 경우 작동
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    // no-cors는 응답을 읽을 수 없으므로, 전송 자체가 성공하면 완료 처리
+    btn.classList.remove('loading');
+    document.getElementById('overlay').classList.add('active');
+
+    // 중복 제출 방지
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+
+  } catch (fetchError) {
+    console.warn('fetch 실패, form 방식으로 재시도:', fetchError);
+
+    // 방법 2: 숨겨진 form + iframe (fetch 차단 시 대체)
+    try {
+      const iframe = document.createElement('iframe');
+      iframe.name = 'hidden_iframe';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = GOOGLE_SCRIPT_URL;
+      form.target = 'hidden_iframe';
+
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'payload';
+      input.value = JSON.stringify(data);
+      form.appendChild(input);
+
+      document.body.appendChild(form);
+      form.submit();
+
+      // 잠시 대기 후 성공 처리
+      setTimeout(() => {
+        btn.classList.remove('loading');
+        document.getElementById('overlay').classList.add('active');
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+        // 정리
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+      }, 2000);
+
+    } catch (formError) {
+      btn.classList.remove('loading');
+      errEl.textContent = '제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+      errEl.classList.add('show');
+      console.error('제출 실패:', formError);
+    }
+  }
+}
+
+// ── Close overlay ──
+document.getElemen
