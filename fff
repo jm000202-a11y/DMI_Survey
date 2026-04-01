@@ -1,0 +1,124 @@
+// ============================================================
+// 장비수요조사 Google Apps Script (Google Sheets 자동 저장)
+// ============================================================
+// 사용법:
+// 1. Google Sheets 새로 만들기
+// 2. 확장 프로그램 → Apps Script 클릭
+// 3. 이 코드 전체를 복사하여 붙여넣기
+// 4. 저장 (Ctrl+S)
+// 5. 배포 → 새 배포 → 웹 앱 → 액세스: 모든 사용자 → 배포
+// 6. 생성된 URL을 index.html의 GOOGLE_SCRIPT_URL에 붙여넣기
+// ============================================================
+
+// 응답 데이터를 저장할 열 순서 (헤더)
+var HEADERS = [
+  'timestamp',
+  'consent1', 'consent2',
+  'name', 'company', 'phone', 'email',
+  'org_type', 'org_type_other',
+  'industry', 'industry_other',
+  'q1',
+  'q2_sils', 'q2_hils', 'q2_rils',
+  'q3', 'q3_other',
+  'q4_1', 'q4_2', 'q4_3',
+  'q5_1', 'q5_2', 'q5_3',
+  'q6_1', 'q6_2', 'q6_3',
+  'q7_1', 'q7_2', 'q7_3',
+  'q8_1', 'q8_2', 'q8_3',
+  'q9',
+  'q10_1_count', 'q10_1_hours',
+  'q10_2_count', 'q10_2_hours',
+  'q10_3_count', 'q10_3_hours',
+  'q11_1', 'q11_2', 'q11_3',
+  'q12_1', 'q12_2', 'q12_3',
+  'q13'
+];
+
+// 헤더 한글 레이블 (시트 첫 행에 자동 생성)
+var HEADER_LABELS = [
+  '제출일시',
+  '개인정보동의1', '개인정보동의2',
+  '이름', '기업명', '전화번호', '이메일',
+  '기관구분', '기관구분_기타',
+  '업종', '업종_기타',
+  'Q1_특구사업자여부',
+  'Q2_SILS', 'Q2_HILS', 'Q2_RILS',
+  'Q3_기술장벽', 'Q3_기타',
+  'Q4_장비1인지', 'Q4_장비2인지', 'Q4_장비3인지',
+  'Q5_장비1경험', 'Q5_장비2경험', 'Q5_장비3경험',
+  'Q6_장비1애로', 'Q6_장비2애로', 'Q6_장비3애로',
+  'Q7_장비1구축필요', 'Q7_장비2구축필요', 'Q7_장비3구축필요',
+  'Q8_장비1활용의사', 'Q8_장비2활용의사', 'Q8_장비3활용의사',
+  'Q9_활용용도',
+  'Q10_장비1_횟수', 'Q10_장비1_시간',
+  'Q10_장비2_횟수', 'Q10_장비2_시간',
+  'Q10_장비3_횟수', 'Q10_장비3_시간',
+  'Q11_장비1공동활용', 'Q11_장비2공동활용', 'Q11_장비3공동활용',
+  'Q12_장비1중점분야', 'Q12_장비2중점분야', 'Q12_장비3중점분야',
+  'Q13_기타의견'
+];
+
+/**
+ * POST 요청 처리 — 설문 응답을 시트에 저장
+ */
+function doPost(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('응답');
+
+    // '응답' 시트가 없으면 자동 생성
+    if (!sheet) {
+      sheet = ss.insertSheet('응답');
+      // 한글 헤더 자동 삽입
+      sheet.getRange(1, 1, 1, HEADER_LABELS.length).setValues([HEADER_LABELS]);
+      // 헤더 서식: 굵게, 배경색, 고정
+      var headerRange = sheet.getRange(1, 1, 1, HEADER_LABELS.length);
+      headerRange.setFontWeight('bold');
+      headerRange.setBackground('#1565E8');
+      headerRange.setFontColor('#FFFFFF');
+      sheet.setFrozenRows(1);
+    }
+
+    // JSON 파싱
+    var data = JSON.parse(e.postData.contents);
+
+    // 헤더 순서에 맞춰 행 데이터 생성
+    var row = HEADERS.map(function(key) {
+      return data[key] || '';
+    });
+
+    // 시트에 새 행 추가
+    sheet.appendRow(row);
+
+    // 성공 응답
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        result: 'success',
+        row: sheet.getLastRow()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    // 에러 응답
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        result: 'error',
+        message: error.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * GET 요청 처리 — 연동 테스트용
+ * 브라우저에서 배포 URL을 열면 연결 상태 확인 가능
+ */
+function doGet(e) {
+  return ContentService
+    .createTextOutput(JSON.stringify({
+      status: 'ok',
+      message: '장비수요조사 Google Sheets 연동이 정상 작동 중입니다.',
+      timestamp: new Date().toLocaleString('ko-KR')
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
