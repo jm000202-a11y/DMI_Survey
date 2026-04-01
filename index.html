@@ -1091,13 +1091,13 @@ document.querySelectorAll('#industryPills input').forEach(r => {
 });
 document.querySelectorAll('input[name="q3"]').forEach(cb => {
   cb.addEventListener('change', () => {
-    const fChecked = document.querySelector('input[name="q3"][value="F"]');
+    const fChecked = document.querySelector('input[name="q3"][value="기타"]');
     document.getElementById('q3Other').classList.toggle('show', fChecked && fChecked.checked);
   });
 });
 document.querySelectorAll('input[name="q3"]').forEach(cb => {
   cb.addEventListener('change', () => {
-    const fChecked = document.querySelector('input[name="q3"][value="F"]');
+    const fChecked = document.querySelector('input[name="q6_1"][value="기타"]');
     document.getElementById('q61Other').classList.toggle('show', fChecked && fChecked.checked);
   });
 });
