@@ -146,16 +146,110 @@
     max-width: 660px;
   }
 
+  .equip-widget {
+    position: relative;
+    z-index: 200;
+  }
+
+  .equip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-equip-toggle {
+    font-size: 12px;
+    color: #fff;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 8px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .btn-equip-toggle:hover {
+    background: rgba(255,255,255,0.28);
+  }
+
   .equip-strip {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
     gap: 12px;
-    margin-top: 32px;
+    margin-bottom: 8px;
+
+    background: rgba(12,26,46,0.95);
+    backdrop-filter: blur(10px);
+    padding: 12px 16px 12px;
+    box-shadow: 0 1px 10px rgba(0,0,0,0.2);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+
+  .equip-widget.fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    z-index: 230;
+    background: rgba(12,26,46,0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+
+  .equip-widget.fixed .equip-strip {
+    position: relative;
+    margin: 0 16px 8px;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .equip-strip.collapsed {
+    display: none;
+  }
+
+  .equip-summary {
+    margin-top: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 10px;
+    padding: 10px;
+  }
+
+  .equip-summary table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+    font-size: 13px;
+  }
+
+  .equip-summary th,
+  .equip-summary td {
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 6px 8px;
+  }
+
+  .equip-summary th {
+    background: rgba(255,255,255,0.15);
+    font-weight: 700;
+    text-align: left;
+    width: 32%;
+  }
+
+  .equip-summary td {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .equip-summary strong {
+    color: #f1f8ff;
   }
 
   .equip-chip {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 12px;
     padding: 18px 16px;
     transition: var(--transition);
@@ -741,21 +835,45 @@
     <div class="hero-tag"><span class="dot"></span> 글로벌 로봇 AI 특구 · 2026–27 구축</div>
     <h1>AI로봇 영상 데이터 규제특례 실증 및<br><em>가상인프라 구축</em> 장비수요조사</h1>
     <p class="hero-desc">글로벌 로봇 AI 특구에서는 로봇 산업의 AI 인식 성능 극대화와 규제특례 기반의 데이터 비즈니스 활성화를 위해 고성능 인프라 구축 사업을 진행하고 있습니다. 본 설문조사는 2026~27년 구축 예정인 가상 시뮬레이션 인프라 구축 장비에 대한 수요조사입니다.</p>
-    <div class="equip-strip">
+    <div class="equip-widget">
+      <div class="equip-header">
+        <span>EQUIPMENT</span>
+        <button type="button" id="equipToggle" class="btn-equip-toggle">닫기</button>
+      </div>
+      <div class="equip-strip">
       <div class="equip-chip">
         <div class="idx">Equipment 01</div>
         <div class="eq-name">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div>
         <div class="eq-use">고성능 GPU 서버</div>
+        <div class="equip-summary">
+          <table>
+            <tr><th>장비개요</th><td>AI로봇 가상 시뮬레이션을 위한 고성능 GPU 서버</td></tr>
+            <tr><th>장비사양</th><td>NVIDIA Blackwell GPU Cluster(N-GPU), Intel Xeon CPU, 1TB RAM, 960GB SSD, 7.6TB SSD</td></tr>
+          </table>
+        </div>
       </div>
       <div class="equip-chip">
         <div class="idx">Equipment 02</div>
         <div class="eq-name">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div>
         <div class="eq-use">로봇 SILS (Soft-in-the-loop)</div>
+        <div class="equip-summary">
+          <table>
+            <tr><th>장비개요</th><td>NVIDIA Isaac Sim 기반의 고정밀 가상 시뮬레이션 플랫폼 및 가상환경 Asset 구축</td></tr>
+            <tr><th>장비사양</th><td>AI로봇 운영환경 모델링, 로봇/센서 DB 구축(객체 모델링), Isaac Sim 모듈 최적화, S/W 브릿지 개발</td></tr>
+          </table>
+        </div>
       </div>
       <div class="equip-chip">
         <div class="idx">Equipment 03</div>
         <div class="eq-name">AI로봇 가상-물리 연동 및 실증 시스템</div>
-        <div class="eq-use">HILS · RILS</div>
+        <div class="eq-use">HILS (Hardware-in-the-loop) · RILS (Robot-in-the-loop)</div>
+        <div class="equip-summary">
+          <table>
+            <tr><th>장비개요</th><td>가상 센서 데이터를 실제 센서 신호로 변환하여 로봇 및 제어기로 전송을 통한 가상-물리 연동 실증 시스템</td></tr>
+            <tr><th>장비사양</th><td>H/W 브릿지 게이트웨이, 센서 주입 모듈, 검증용 래퍼런스 장비, 센서 주입 데이터 → 신호 변환 로직</td></tr>
+          </table>
+        </div>
+      </div>
       </div>
     </div>
   </div>
@@ -890,12 +1008,12 @@
     <div class="q-block">
       <div class="q-head"><span class="q-num">3</span><p class="q-text">가상 시뮬레이션 시 가장 큰 기술적 장벽은 무엇입니까? <span class="hint">(복수응답 가능)</span></p></div>
       <div class="pills vertical">
-        <label class="pill"><input type="checkbox" name="q3" value="복잡한 시나리오별 환경 구축 및 물리 엔진 최적화의 어려움"><span class="pill-face">A. 복잡한 시나리오별 환경 구축 및 물리 엔진 최적화의 어려움</span></label>
-        <label class="pill"><input type="checkbox" name="q3" value="디지털 트윈 에셋(Asset) 및 센서 모델 부재"><span class="pill-face">B. 디지털 트윈 에셋(Asset) 및 센서 모델 부재</span></label>
-        <label class="pill"><input type="checkbox" name="q3" value="대규모 병렬 연산을 위한 고성능 컴퓨팅 자원 부족"><span class="pill-face">C. 대규모 병렬 연산을 위한 고성능 컴퓨팅 자원 부족</span></label>
-        <label class="pill"><input type="checkbox" name="q3" value="가상 실증 데이터의 공신력 및 성능 인증 체계 부재"><span class="pill-face">D. 가상 실증 데이터의 공신력 및 성능 인증 체계 부재</span></label>
-        <label class="pill"><input type="checkbox" name="q3" value="시뮬레이터 및 HILS/RILS 장비 운용 전문 인력 부족"><span class="pill-face">E. 시뮬레이터 및 HILS/RILS 장비 운용 전문 인력 부족</span></label>
-        <label class="pill"><input type="checkbox" name="q3" value="기타"><span class="pill-face">F. 기타</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="복잡한 시나리오별 환경 구축 및 물리 엔진 최적화의 어려움"><span class="pill-face">복잡한 시나리오별 환경 구축 및 물리 엔진 최적화의 어려움</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="디지털 트윈 에셋(Asset) 및 센서 모델 부재"><span class="pill-face">디지털 트윈 에셋(Asset) 및 센서 모델 부재</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="대규모 병렬 연산을 위한 고성능 컴퓨팅 자원 부족"><span class="pill-face">대규모 병렬 연산을 위한 고성능 컴퓨팅 자원 부족</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="가상 실증 데이터의 공신력 및 성능 인증 체계 부재"><span class="pill-face">가상 실증 데이터의 공신력 및 성능 인증 체계 부재</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="시뮬레이터 및 HILS/RILS 장비 운용 전문 인력 부족"><span class="pill-face">시뮬레이터 및 HILS/RILS 장비 운용 전문 인력 부족</span></label>
+        <label class="pill"><input type="checkbox" name="q3" value="기타"><span class="pill-face">기타</span></label>
       </div>
       <div class="other-inline" id="q3Other"><input type="text" class="text-input" name="q3_other" placeholder="기타 기술적 장벽 입력"></div>
     </div>
@@ -907,9 +1025,27 @@
     <div class="q-block">
       <div class="q-head"><span class="q-num">4</span><p class="q-text">다음의 장비를 알고 계십니까?</p></div>
       <div class="sub-items">
-        <div class="sub-item"><div class="sub-label">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q4_1" value="알고있음"><span class="pill-face">알고있음</span></label><label class="pill"><input type="radio" name="q4_1" value="모름"><span class="pill-face">모름</span></label></div></div>
-        <div class="sub-item"><div class="sub-label">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q4_2" value="알고있음"><span class="pill-face">알고있음</span></label><label class="pill"><input type="radio" name="q4_2" value="모름"><span class="pill-face">모름</span></label></div></div>
-        <div class="sub-item"><div class="sub-label">AI로봇 가상-물리 연동 및 실증 시스템</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q4_3" value="알고있음"><span class="pill-face">알고있음</span></label><label class="pill"><input type="radio" name="q4_3" value="모름"><span class="pill-face">모름</span></label></div></div>
+        <div class="sub-item">
+          <div class="sub-label">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div>
+          <div class="sub-pills pills compact">
+            <label class="pill"><input type="radio" name="q4_1" value="알고있음"><span class="pill-face">알고있음</span></label>
+            <label class="pill"><input type="radio" name="q4_1" value="모름"><span class="pill-face">모름</span></label>
+          </div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div>
+          <div class="sub-pills pills compact">
+            <label class="pill"><input type="radio" name="q4_2" value="알고있음"><span class="pill-face">알고있음</span></label>
+            <label class="pill"><input type="radio" name="q4_2" value="모름"><span class="pill-face">모름</span></label>
+          </div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">AI로봇 가상-물리 연동 및 실증 시스템</div>
+          <div class="sub-pills pills compact">
+            <label class="pill"><input type="radio" name="q4_3" value="알고있음"><span class="pill-face">알고있음</span></label>
+            <label class="pill"><input type="radio" name="q4_3" value="모름"><span class="pill-face">모름</span></label>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -917,9 +1053,27 @@
     <div class="q-block">
       <div class="q-head"><span class="q-num">5</span><p class="q-text">귀 기관은 본 장비와 관련한 장비를 이용한 경험이 있습니까?</p></div>
       <div class="sub-items">
-        <div class="sub-item"><div class="sub-label">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q5_1" value="있음"><span class="pill-face">있음</span></label><label class="pill"><input type="radio" name="q5_1" value="없음"><span class="pill-face">없음</span></label></div></div>
-        <div class="sub-item"><div class="sub-label">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q5_2" value="있음"><span class="pill-face">있음</span></label><label class="pill"><input type="radio" name="q5_2" value="없음"><span class="pill-face">없음</span></label></div></div>
-        <div class="sub-item"><div class="sub-label">AI로봇 가상-물리 연동 및 실증 시스템</div><div class="sub-pills pills compact"><label class="pill"><input type="radio" name="q5_3" value="있음"><span class="pill-face">있음</span></label><label class="pill"><input type="radio" name="q5_3" value="없음"><span class="pill-face">없음</span></label></div></div>
+        <div class="sub-item">
+          <div class="sub-label">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div>
+          <div class="sub-pills pills compact">
+            <label class="pill"><input type="radio" name="q5_1" value="있음"><span class="pill-face">있음</span></label>
+            <label class="pill"><input type="radio" name="q5_1" value="없음"><span class="pill-face">없음</span></label>
+          </div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div>
+          <div class="sub-pills pills compact">
+            <label class="pill"><input type="radio" name="q5_2" value="있음"><span class="pill-face">있음</span></label>
+            <label class="pill"><input type="radio" name="q5_2" value="없음"><span class="pill-face">없음</span></label>
+          </div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">AI로봇 가상-물리 연동 및 실증 시스템</div>
+          <div class="sub-pills pills compact">
+            <label class="pill"><input type="radio" name="q5_3" value="있음"><span class="pill-face">있음</span></label>
+            <label class="pill"><input type="radio" name="q5_3" value="없음"><span class="pill-face">없음</span></label>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -933,13 +1087,31 @@
             <label class="pill"><input type="checkbox" name="q6_1" value="작업성"><span class="pill-face">작업성(대기/소요시간)</span></label>
             <label class="pill"><input type="checkbox" name="q6_1" value="장비사양부족"><span class="pill-face">장비 사양 부족</span></label>
             <label class="pill"><input type="checkbox" name="q6_1" value="사용법숙지부재"><span class="pill-face">사용법 숙지 부재</span></label>
-            <label class="pill"><input type="checkbox" name="q6_1" value="F"><span class="pill-face">기타</span></label>
-         </div>
-       <div class="other-inline" id="q61Other"><input type="text" class="text-input" name="q6_1_other" placeholder="기타"></div>
-        <div class="diff-item"><div class="diff-name">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div><div class="pills compact"><label class="pill"><input type="checkbox" name="q6_2" value="접근성"><span class="pill-face">접근성</span></label><label class="pill"><input type="checkbox" name="q6_2" value="작업성"><span class="pill-face">작업성(대기/소요시간)</span></label><label class="pill"><input type="checkbox" name="q6_2" value="장비사양부족"><span class="pill-face">장비 사양 부족</span></label><label class="pill"><input type="checkbox" name="q6_2" value="사용법숙지부재"><span class="pill-face">사용법 숙지 부재</span></label><input type="text" class="text-input" name="q6_2" placeholder="기타"></div></div>
-        <div class="diff-item"><div class="diff-name">AI로봇 가상-물리 연동 및 실증 시스템</div><div class="pills compact"><label class="pill"><input type="checkbox" name="q6_3" value="접근성"><span class="pill-face">접근성</span></label><label class="pill"><input type="checkbox" name="q6_3" value="작업성"><span class="pill-face">작업성(대기/소요시간)</span></label><label class="pill"><input type="checkbox" name="q6_3" value="장비사양부족"><span class="pill-face">장비 사양 부족</span></label><label class="pill"><input type="checkbox" name="q6_3" value="사용법숙지부재"><span class="pill-face">사용법 숙지 부재</span></label><input type="text" class="text-input" name="q6_3" placeholder="기타"></div></div>
+            <label class="pill"><input type="checkbox" name="q6_1" value="기타"><span class="pill-face">기타</span></label>
+          </div>
+          <div class="other-inline" id="q61Other"><input type="text" class="text-input" name="q6_1_other" placeholder="기타"></div>
+        </div>
+        <div class="diff-item"><div class="diff-name">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div>
+          <div class="pills compact">
+            <label class="pill"><input type="checkbox" name="q6_2" value="접근성"><span class="pill-face">접근성</span></label>
+            <label class="pill"><input type="checkbox" name="q6_2" value="작업성"><span class="pill-face">작업성(대기/소요시간)</span></label>
+            <label class="pill"><input type="checkbox" name="q6_2" value="장비사양부족"><span class="pill-face">장비 사양 부족</span></label>
+            <label class="pill"><input type="checkbox" name="q6_2" value="사용법숙지부재"><span class="pill-face">사용법 숙지 부재</span></label>
+            <label class="pill"><input type="checkbox" name="q6_2" value="기타"><span class="pill-face">기타</span></label>
+          </div>
+          <div class="other-inline" id="q62Other"><input type="text" class="text-input" name="q6_2_other" placeholder="기타"></div>
+        </div>
+        <div class="diff-item"><div class="diff-name">AI로봇 가상-물리 연동 및 실증 시스템</div>
+          <div class="pills compact">
+            <label class="pill"><input type="checkbox" name="q6_3" value="접근성"><span class="pill-face">접근성</span></label>
+            <label class="pill"><input type="checkbox" name="q6_3" value="작업성"><span class="pill-face">작업성(대기/소요시간)</span></label>
+            <label class="pill"><input type="checkbox" name="q6_3" value="장비사양부족"><span class="pill-face">장비 사양 부족</span></label>
+            <label class="pill"><input type="checkbox" name="q6_3" value="사용법숙지부재"><span class="pill-face">사용법 숙지 부재</span></label>
+            <label class="pill"><input type="checkbox" name="q6_3" value="기타"><span class="pill-face">기타</span></label>
+          </div>
+          <div class="other-inline" id="q63Other"><input type="text" class="text-input" name="q6_3_other" placeholder="기타"></div>
+        </div>
       </div>
-    </div>
   </div>
 
   <!-- ── Q7 ~ Q8 ── -->
@@ -1000,35 +1172,39 @@
       <div class="diff-block">
         <div class="diff-item"><div class="diff-name">AI로봇 가상 시뮬레이션 고성능 실증 시스템</div>
           <div class="pills compact">
-            <label class="pill"><input type="checkbox" name="q12_1" value="A"><span class="pill-face">A. 기업 맞춤형 가상 환경 구축 지원</span></label>
-            <label class="pill"><input type="checkbox" name="q12_1" value="B"><span class="pill-face">B. 가상 실증 기반 성능 인증 지원</span></label>
-            <label class="pill"><input type="checkbox" name="q12_1" value="C"><span class="pill-face">C. Sim-to-Real 간극 최적화 컨설팅</span></label>
-            <label class="pill"><input type="checkbox" name="q12_1" value="D"><span class="pill-face">D. 가상 센서(합성) 데이터 생성 지원</span></label>
-            <label class="pill"><input type="checkbox" name="q12_1" value="E"><span class="pill-face">E. 장비 및 시나리오 운영 기술 교육</span></label>
-            <label class="pill"><input type="checkbox" name="q12_1" value="E"><span class="pill-face">F. 인프라 활용 공동 R&D 과제 발굴</span></label>
-            <input type="text" class="text-input" name="q12_1" placeholder="G.기타">
+            <label class="pill"><input type="checkbox" name="q12_1" value="기업 맞춤형 가상 환경 구축 지원"><span class="pill-face">기업 맞춤형 가상 환경 구축 지원</span></label>
+            <label class="pill"><input type="checkbox" name="q12_1" value="가상 실증 기반 성능 인증 지원"><span class="pill-face">가상 실증 기반 성능 인증 지원</span></label>
+            <label class="pill"><input type="checkbox" name="q12_1" value="Sim-to-Real 간극 최적화 컨설팅"><span class="pill-face">Sim-to-Real 간극 최적화 컨설팅</span></label>
+            <label class="pill"><input type="checkbox" name="q12_1" value="가상 센서(합성) 데이터 생성 지원"><span class="pill-face">가상 센서(합성) 데이터 생성 지원</span></label>
+            <label class="pill"><input type="checkbox" name="q12_1" value="장비 및 시나리오 운영 기술 교육"><span class="pill-face">장비 및 시나리오 운영 기술 교육</span></label>
+            <label class="pill"><input type="checkbox" name="q12_1" value="인프라 활용 공동 R&D 과제 발굴"><span class="pill-face">인프라 활용 공동 R&D 과제 발굴</span></label>
+            <label class="pill"><input type="checkbox" name="q12_1" value="기타"><span class="pill-face">기타</span></label>
           </div>
+          <div class="other-inline" id="q121Other"><input type="text" class="text-input" name="q12_1_other" placeholder="기타"></div>
         </div>
         <div class="diff-item"><div class="diff-name">AI로봇 디지털 트윈 기반 가상 시뮬레이션 및 통합 플랫폼</div>
           <div class="pills compact">
-          <label class="pill"><input type="checkbox" name="q12_2" value="기업 맞춤형 가상 환경 구축 지원"><span class="pill-face">A. 기업 맞춤형 가상 환경 구축 지원</span></label>
-            <label class="pill"><input type="checkbox" name="q12_2" value="가상 실증 기반 성능 인증 지원"><span class="pill-face">B. 가상 실증 기반 성능 인증 지원</span></label>
-            <label class="pill"><input type="checkbox" name="q12_2" value="Sim-to-Real 간극 최적화 컨설팅"><span class="pill-face">C. Sim-to-Real 간극 최적화 컨설팅</span></label>
-            <label class="pill"><input type="checkbox" name="q12_2" value="가상 센서(합성) 데이터 생성 지원"><span class="pill-face">D. 가상 센서(합성) 데이터 생성 지원</span></label>
-            <label class="pill"><input type="checkbox" name="q12_2" value="장비 및 시나리오 운영 기술 교육"><span class="pill-face">E. 장비 및 시나리오 운영 기술 교육</span></label>
-            <label class="pill"><input type="checkbox" name="q12_2" value="인프라 활용 공동 R&D 과제 발굴"><span class="pill-face">F. 인프라 활용 공동 R&D 과제 발굴</span></label>
-            <input type="text" class="text-input" name="q12_2" placeholder="G.기타">
+            <label class="pill"><input type="checkbox" name="q12_2" value="기업 맞춤형 가상 환경 구축 지원"><span class="pill-face">기업 맞춤형 가상 환경 구축 지원</span></label>
+            <label class="pill"><input type="checkbox" name="q12_2" value="가상 실증 기반 성능 인증 지원"><span class="pill-face">가상 실증 기반 성능 인증 지원</span></label>
+            <label class="pill"><input type="checkbox" name="q12_2" value="Sim-to-Real 간극 최적화 컨설팅"><span class="pill-face">Sim-to-Real 간극 최적화 컨설팅</span></label>
+            <label class="pill"><input type="checkbox" name="q12_2" value="가상 센서(합성) 데이터 생성 지원"><span class="pill-face">가상 센서(합성) 데이터 생성 지원</span></label>
+            <label class="pill"><input type="checkbox" name="q12_2" value="장비 및 시나리오 운영 기술 교육"><span class="pill-face">장비 및 시나리오 운영 기술 교육</span></label>
+            <label class="pill"><input type="checkbox" name="q12_2" value="인프라 활용 공동 R&D 과제 발굴"><span class="pill-face">인프라 활용 공동 R&D 과제 발굴</span></label>
+            <label class="pill"><input type="checkbox" name="q12_2" value="기타"><span class="pill-face">기타</span></label>
           </div>
+          <div class="other-inline" id="q122Other"><input type="text" class="text-input" name="q12_2_other" placeholder="기타"></div>
+        </div>
         <div class="diff-item"><div class="diff-name">AI로봇 가상-물리 연동 및 실증 시스템</div>
           <div class="pills compact">
-            <label class="pill"><input type="checkbox" name="q12_3" value="A"><span class="pill-face">A. 기업 맞춤형 가상 환경 구축 지원</span></label>
-            <label class="pill"><input type="checkbox" name="q12_3" value="B"><span class="pill-face">B. 가상 실증 기반 성능 인증 지원</span></label>
-            <label class="pill"><input type="checkbox" name="q12_3" value="C"><span class="pill-face">C. Sim-to-Real 간극 최적화 컨설팅</span></label>
-            <label class="pill"><input type="checkbox" name="q12_3" value="D"><span class="pill-face">D. 가상 센서(합성) 데이터 생성 지원</span></label>
-            <label class="pill"><input type="checkbox" name="q12_3" value="E"><span class="pill-face">E. 장비 및 시나리오 운영 기술 교육</span></label>
-            <label class="pill"><input type="checkbox" name="q12_3" value="E"><span class="pill-face">F. 인프라 활용 공동 R&D 과제 발굴</span></label>
-            <input type="text" class="text-input" name="q12_3" placeholder="G.기타">
-          </div>      
+            <label class="pill"><input type="checkbox" name="q12_3" value="기업 맞춤형 가상 환경 구축 지원"><span class="pill-face">기업 맞춤형 가상 환경 구축 지원</span></label>
+            <label class="pill"><input type="checkbox" name="q12_3" value="가상 실증 기반 성능 인증 지원"><span class="pill-face">가상 실증 기반 성능 인증 지원</span></label>
+            <label class="pill"><input type="checkbox" name="q12_3" value="Sim-to-Real 간극 최적화 컨설팅"><span class="pill-face">Sim-to-Real 간극 최적화 컨설팅</span></label>
+            <label class="pill"><input type="checkbox" name="q12_3" value="가상 센서(합성) 데이터 생성 지원"><span class="pill-face">가상 센서(합성) 데이터 생성 지원</span></label>
+            <label class="pill"><input type="checkbox" name="q12_3" value="장비 및 시나리오 운영 기술 교육"><span class="pill-face">장비 및 시나리오 운영 기술 교육</span></label>
+            <label class="pill"><input type="checkbox" name="q12_3" value="인프라 활용 공동 R&D 과제 발굴"><span class="pill-face">인프라 활용 공동 R&D 과제 발굴</span></label>
+            <label class="pill"><input type="checkbox" name="q12_3" value="기타"><span class="pill-face">기타</span></label>
+          </div> 
+          <div class="other-inline" id="q123Other"><input type="text" class="text-input" name="q12_3_other" placeholder="기타"></div>     
         </div>
     </div>
   </div>
@@ -1101,11 +1277,103 @@ document.querySelectorAll('input[name="q6_1"]').forEach(cb => {
     document.getElementById('q61Other').classList.toggle('show', fChecked && fChecked.checked);
   });
 });
+document.querySelectorAll('input[name="q6_2"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const fChecked = document.querySelector('input[name="q6_2"][value="기타"]');
+    document.getElementById('q62Other').classList.toggle('show', fChecked && fChecked.checked);
+  });
+});
+document.querySelectorAll('input[name="q6_3"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const fChecked = document.querySelector('input[name="q6_3"][value="기타"]');
+    document.getElementById('q63Other').classList.toggle('show', fChecked && fChecked.checked);
+  });
+});
+document.querySelectorAll('input[name="q12_1"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const fChecked = document.querySelector('input[name="q12_1"][value="기타"]');
+    document.getElementById('q121Other').classList.toggle('show', fChecked && fChecked.checked);
+  });
+});
+document.querySelectorAll('input[name="q12_2"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const fChecked = document.querySelector('input[name="q12_2"][value="기타"]');
+    document.getElementById('q122Other').classList.toggle('show', fChecked && fChecked.checked);
+  });
+});
+document.querySelectorAll('input[name="q12_3"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const fChecked = document.querySelector('input[name="q12_3"][value="기타"]');
+    document.getElementById('q123Other').classList.toggle('show', fChecked && fChecked.checked);
+  });
+});
 
-// ── Progress bar ──
+// ── Progress bar + equipment sticky/fixed toggle ──
+const equipWidget = document.querySelector('.equip-widget');
+const equipStrip = document.querySelector('.equip-strip');
+const equipToggleBtn = document.getElementById('equipToggle');
+const equipPlaceholder = document.createElement('div');
+let equipTop = null;
+
+function updateEquipTop() {
+  if (!equipWidget) return;
+  const rect = equipWidget.getBoundingClientRect();
+  equipTop = rect.top + window.scrollY;
+  equipPlaceholder.style.height = `${rect.height}px`;
+  equipPlaceholder.style.display = 'none';
+}
+
+if (equipWidget) {
+  equipWidget.parentNode.insertBefore(equipPlaceholder, equipWidget);
+  window.addEventListener('resize', updateEquipTop);
+  updateEquipTop();
+}
+
+if (equipToggleBtn && equipStrip) {
+  equipToggleBtn.addEventListener('click', () => {
+    const isCollapsed = equipStrip.classList.toggle('collapsed');
+    equipToggleBtn.textContent = isCollapsed ? '열기' : '닫기';
+
+    if (equipStrip.classList.contains('collapsed')) {
+      equipWidget.classList.remove('fixed');
+      equipPlaceholder.style.display = 'none';
+    } else {
+      updateEquipTop();
+    }
+  });
+}
+
 window.addEventListener('scroll', () => {
   const pct = Math.min(window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100, 100);
   document.getElementById('progressFill').style.width = pct + '%';
+
+  if (!equipWidget || !equipStrip || equipTop === null) return;
+  if (equipStrip.classList.contains('collapsed')) {
+    if (window.scrollY >= equipTop - 48) {
+      if (!equipWidget.classList.contains('fixed')) {
+        equipWidget.classList.add('fixed');
+        equipPlaceholder.style.display = 'block';
+      }
+    } else {
+      if (equipWidget.classList.contains('fixed')) {
+        equipWidget.classList.remove('fixed');
+        equipPlaceholder.style.display = 'none';
+      }
+    }
+    return;
+  }
+
+  if (window.scrollY >= equipTop - 48) {
+    if (!equipWidget.classList.contains('fixed')) {
+      equipWidget.classList.add('fixed');
+      equipPlaceholder.style.display = 'block';
+    }
+  } else {
+    if (equipWidget.classList.contains('fixed')) {
+      equipWidget.classList.remove('fixed');
+      equipPlaceholder.style.display = 'none';
+    }
+  }
 });
 
 // ── Collect all form data ──
@@ -1161,6 +1429,111 @@ function validate() {
   if (!document.querySelector('input[name="industry"]:checked')) {
     alert('업종을 선택해주세요.');
     return false;
+  }
+
+  // Q1: 특구사업자 여부
+  if (!document.querySelector('input[name="q1"]:checked')) {
+    alert('Q1: 귀사의 특구사업자 여부를 선택해주세요.');
+    return false;
+  }
+
+  // Q2: 시뮬레이션 단계 활용
+  const q2Fields = ['q2_sils', 'q2_hils', 'q2_rils'];
+  for (const field of q2Fields) {
+    if (!document.querySelector(`input[name="${field}"]:checked`)) {
+      alert(`Q2: ${field.replace('q2_', '').toUpperCase()} 활용도를 선택해주세요.`);
+      return false;
+    }
+  }
+
+  // Q3: 기술적 장벽 (하나 이상 선택)
+  if (!document.querySelector('input[name="q3"]:checked')) {
+    alert('Q3: 기술적 장벽을 하나 이상 선택해주세요.');
+    return false;
+  }
+
+  // Q4: 장비 알고 있음
+  const q4Fields = ['q4_1', 'q4_2', 'q4_3'];
+  for (const field of q4Fields) {
+    if (!document.querySelector(`input[name="${field}"]:checked`)) {
+      alert(`Q4: 장비 ${field.slice(-1)}에 대해 알고 있는지 선택해주세요.`);
+      return false;
+    }
+  }
+
+  // Q5: 장비 이용 경험
+  const q5Fields = ['q5_1', 'q5_2', 'q5_3'];
+  for (const field of q5Fields) {
+    if (!document.querySelector(`input[name="${field}"]:checked`)) {
+      alert(`Q5: 장비 ${field.slice(-1)} 이용 경험을 선택해주세요.`);
+      return false;
+    }
+  }
+
+  // Q6: 애로사항 (Q5가 '있음'일 때만 체크)
+  for (let i = 1; i <= 3; i++) {
+    const q5Value = document.querySelector(`input[name="q5_${i}"]:checked`);
+    if (q5Value && q5Value.value === '있음') {
+      if (!document.querySelector(`input[name="q6_${i}"]:checked`)) {
+        alert(`Q6: 장비 ${i} 애로사항을 하나 이상 선택해주세요.`);
+        return false;
+      }
+    }
+  }
+
+  // Q7: 구축 필요성
+  const q7Fields = ['q7_1', 'q7_2', 'q7_3'];
+  for (const field of q7Fields) {
+    if (!document.querySelector(`input[name="${field}"]:checked`)) {
+      alert(`Q7: 장비 ${field.slice(-1)} 구축 필요성을 선택해주세요.`);
+      return false;
+    }
+  }
+
+  // Q8: 활용 의사
+  const q8Fields = ['q8_1', 'q8_2', 'q8_3'];
+  for (const field of q8Fields) {
+    if (!document.querySelector(`input[name="${field}"]:checked`)) {
+      alert(`Q8: 장비 ${field.slice(-1)} 활용 의사를 선택해주세요.`);
+      return false;
+    }
+  }
+
+  // Q9: 활용 용도
+  const q9El = document.querySelector('textarea[name="q9"]');
+  if (!q9El.value.trim()) {
+    alert('Q9: 활용 용도를 입력해주세요.');
+    q9El.focus();
+    return false;
+  }
+
+  // Q10: 활용 횟수/시간
+  const q10Fields = ['q10_1_count', 'q10_1_hours', 'q10_2_count', 'q10_2_hours', 'q10_3_count', 'q10_3_hours'];
+  for (const field of q10Fields) {
+    const el = document.querySelector(`input[name="${field}"]`);
+    if (!el.value.trim()) {
+      alert(`Q10: ${field.replace('_', ' 장비 ').replace('_count', ' 활용 횟수').replace('_hours', ' 예상 시간')}을 입력해주세요.`);
+      el.focus();
+      return false;
+    }
+  }
+
+  // Q11: 공동 활용 가능성
+  const q11Fields = ['q11_1', 'q11_2', 'q11_3'];
+  for (const field of q11Fields) {
+    if (!document.querySelector(`input[name="${field}"]:checked`)) {
+      alert(`Q11: 장비 ${field.slice(-1)} 공동 활용 가능성을 선택해주세요.`);
+      return false;
+    }
+  }
+
+  // Q12: 중점 추진 분야 (하나 이상 선택)
+  const q12Fields = ['q12_1', 'q12_2', 'q12_3'];
+  for (const field of q12Fields) {
+    if (!document.querySelector(`input[name="${field}"]:checked`)) {
+      alert(`Q12: 장비 ${field.slice(-1)} 중점 추진 분야를 하나 이상 선택해주세요.`);
+      return false;
+    }
   }
 
   return true;
@@ -1273,6 +1646,3 @@ async function handleSubmit() {
 // ── Close overlay ──
 document.getElemen
 </script>
-
-</body>
-</html>
